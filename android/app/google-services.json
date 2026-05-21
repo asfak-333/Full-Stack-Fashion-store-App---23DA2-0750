@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "698738692116",
+    "project_id": "satinstone-27cc0",
+    "storage_bucket": "satinstone-27cc0.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:698738692116:android:4b913741051c4a75fed701",
+        "android_client_info": {
+          "package_name": "com.example.fashion_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD0oQpbxXwaqmFjWe0VLwH8OTMhssdbrYg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
