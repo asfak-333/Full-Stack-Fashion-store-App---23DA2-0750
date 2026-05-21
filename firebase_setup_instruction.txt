@@ -1,0 +1,106 @@
+FIREBASE SETUP INSTRUCTIONS FOR SATINSTONE FASHION APP
+================================================================================
+
+This document provides a step-by-step guide to setting up the Firebase backend 
+for the SatinStone application.
+
+1. FIREBASE PROJECT CREATION
+--------------------------------------------------------------------------------
+1. Go to the Firebase Console: https://console.firebase.google.com/
+2. Click "Add project" and name it "SatinStone" (or your preferred name).
+3. (Optional) Enable Google Analytics for the project.
+4. Click "Create project" and wait for it to finish.
+
+2. INSTALL FIREBASE & FLUTTERFIRE CLI
+--------------------------------------------------------------------------------
+To automate the configuration, ensure you have the following installed:
+1. Install Firebase CLI: 
+   npm install -g firebase-tools
+2. Login to Firebase:
+   firebase login
+3. Install FlutterFire CLI:
+   dart pub global activate flutterfire_cli
+
+3. REGISTER APPS & CONFIGURE FLUTTER
+--------------------------------------------------------------------------------
+1. In your terminal, navigate to the project root:
+   cd path/to/fashion_app
+2. Run the FlutterFire configuration command:
+   flutterfire configure
+3. Select your Firebase project from the list.
+4. Select the platforms you want to support (android, ios, web).
+5. The CLI will automatically:
+   - Create apps in the Firebase Console.
+   - Generate 'lib/firebase_options.dart'.
+   - Download 'google-services.json' (Android) and 'GoogleService-Info.plist' (iOS).
+
+4. CONFIGURE FIREBASE AUTHENTICATION
+--------------------------------------------------------------------------------
+1. In the Firebase Console, go to "Build" > "Authentication".
+2. Click "Get Started".
+3. In the "Sign-in method" tab, click "Add new provider".
+4. Select "Email/Password" and enable it.
+5. Click "Save".
+
+5. CONFIGURE CLOUD FIRESTORE
+--------------------------------------------------------------------------------
+1. Go to "Build" > "Firestore Database".
+2. Click "Create database".
+3. Select a location near your users (e.g., us-central1).
+4. Start in "Production mode" or "Test mode" (Rules will be updated below).
+5. Click "Create".
+
+6. APPLY FIRESTORE SECURITY RULES
+--------------------------------------------------------------------------------
+1. In the Firestore section, click the "Rules" tab.
+2. Copy and paste the following rules:
+
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Products: Read by everyone, write by authenticated users (admins)
+    match /products/{productId} {
+      allow read: if true;
+      allow write: if request.auth != null;
+    }
+
+    // Orders: User specific access
+    match /orders/{orderId} {
+      allow read: if request.auth != null && (resource == null || resource.data.userId == request.auth.uid);
+      allow create: if request.auth != null && request.resource.data.userId == request.auth.uid;
+      allow update, delete: if request.auth != null && resource.data.userId == request.auth.uid;
+    }
+
+    // Addresses: User specific access
+    match /addresses/{addressId} {
+      allow read: if request.auth != null && (resource == null || resource.data.userId == request.auth.uid);
+      allow create: if request.auth != null && request.resource.data.userId == request.auth.uid;
+      allow update, delete: if request.auth != null && resource.data.userId == request.auth.uid;
+    }
+
+    // User Profiles: Only accessible by the owner
+    match /users/{userId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+  }
+}
+
+3. Click "Publish".
+
+7. DATA INITIALIZATION (IMPORTANT)
+--------------------------------------------------------------------------------
+The app expects certain data to exist in Firestore to function correctly:
+1. Create a collection named "products".
+2. Add product documents following the schema in 'lib/models/product.dart'.
+   Fields: id, name, description, price, imageUrl, category, etc.
+
+8. VERIFICATION
+--------------------------------------------------------------------------------
+1. Run the app: flutter run
+2. Try signing up with a new email/password.
+3. Check the Firebase Console "Authentication" tab to see if the user was created.
+4. Try browsing products (ensure products are seeded in Firestore).
+
+--------------------------------------------------------------------------------
+SATINSTONE - PREMIER FASHION EXPERIENCE
